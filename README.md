@@ -1,4 +1,4 @@
-# Vue Player Component
+# Vue Bathyscaphe Player App
 
 ## Project setup
 ```
@@ -14,3 +14,5 @@ npm run serve
 ```
 npm run build
 ```
+
+### README to change
