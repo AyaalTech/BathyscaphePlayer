@@ -1,0 +1,22 @@
+# Ignore dependencies
+node_modules/
+
+# Ignore build output
+/dist/
+
+# Ignore IDE and editor files
+.idea/
+.vscode/
+
+# Ignore logs and runtime data
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+node_modules/
