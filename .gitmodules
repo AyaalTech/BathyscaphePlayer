@@ -1,0 +1,3 @@
+[submodule "RTSPtoWebRTC"]
+	path = RTSPtoWebRTC
+	url = https://github.com/deepch/RTSPtoWebRTC
