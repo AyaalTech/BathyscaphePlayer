@@ -32,6 +32,7 @@
   </template>
   
   <script>
+  //import config from '../../RTSPtoWebRTC/config.json'
   export default {
     name: 'SidebarMenu',
     props: {
