@@ -1,9 +1,21 @@
 <template>
-  <Sidebar />
+  <sidebar></sidebar>
   <div class="fullscreen-player">
-    <PlayerVue />
+    <player-vue></player-vue>
   </div>
 </template>
+
+<script>
+import PlayerVue from './components/PlayerVue.vue';
+import Sidebar from './components/SidebarMain.vue';
+
+export default {
+  components: {
+    PlayerVue,
+    Sidebar
+  },
+};
+</script>
 
 <style>
 .fullscreen-player {
@@ -16,17 +28,4 @@
 }
 
 @import url("assets/reset.css");
-@import url("assets/sidebar.css");
 </style>
-
-<script>
-import PlayerVue from "./components/PlayerVue.vue";
-import Sidebar from "./components/Sidebar.vue";
-export default {
-  name: 'App',
-  components: {
-    PlayerVue,
-    Sidebar
-  },
-}
-</script>

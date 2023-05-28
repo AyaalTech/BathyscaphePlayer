@@ -1,6 +1,6 @@
 # Vue Bathyscaphe Player App
 
-## To setup and run project follow these steps
+**To setup and run project follow these steps**
 
 ### 1. Project setup
 ```
