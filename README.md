@@ -11,3 +11,8 @@ npm install (also does git submodule init && git submodule update)
 ```
 npm run setup
 ```
+
+### 3. Project run
+```
+npm run serve
+```
