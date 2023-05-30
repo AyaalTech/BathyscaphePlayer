@@ -1,6 +1,9 @@
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+  <div class="fullscreen-player">
+    <div :id="elementId" />
+  </div>
   <div class="sidebar-container">
     <div class="sidebar-wrapper">
       <aside :class="['sidebar', { 'open': showSidebar, 'closed': !showSidebar }]">
@@ -19,8 +22,8 @@
           <hr class="rounded">
           <ul>
             <li v-for="(url, name) in filteredStreams" :key="name">
-              <button class="sidebar-button" :name="name" :value="url">
-                <sidebar-item :name="name" :suiid="name" @stream-selected="handleStreamSelected"></sidebar-item>
+              <button class="sidebar-button" :name="name" :value="url" @click="handleStreamSelected(name)">
+                <sidebar-item :name="name" :uuid="name"></sidebar-item>
               </button>
             </li>
           </ul>
@@ -32,11 +35,13 @@
 </template>
 
 <script>
+import RTSPtoWEBPlayer from "rtsptowebplayer";
 import ToggleButton from './ToggleButton.vue';
 import SidebarItem from './SidebarItem.vue';
 import configData from './../../RTSPtoWebRTC/config.json';
 
 export default {
+  name: "PlayerVue",
   computed: {
     filteredStreams() {
       return Object.entries(this.streams).reduce((filtered, [name, stream]) => {
@@ -55,6 +60,9 @@ export default {
       devices: [],
       selectedDevice: '',
       filteredStreamsData: {},
+      uuid: '',
+      elementId: 'player',
+      player: null,
     };
   },
   methods: {
@@ -63,6 +71,21 @@ export default {
     },
     updateFilteredStreams() {
       this.filteredStreamsData = this.filteredStreams;
+    },
+    handleStreamSelected(uuid) {
+      this.uuid = uuid;
+      const server = "127.0.0.1:8083";
+      const source = `http://${server}/stream/receiver/${uuid}`;
+
+      this.player.destroy(); // Destroy the existing player
+
+      const options = {
+        controls: false,
+        parentElement: document.getElementById(this.elementId),
+        autoplay: true
+      };
+      this.player = new RTSPtoWEBPlayer(options);
+      this.player.load(source);
     },
   },
   created() {
@@ -75,130 +98,35 @@ export default {
     SidebarItem,
     ToggleButton
   },
+  mounted() {
+    const server = "127.0.0.1:8083";
+    const uuid = "Japan";
+    const source = `http://${server}/stream/receiver/${uuid}`;
+
+    const options = {
+      controls: false,
+      parentElement: document.getElementById(this.elementId),
+      autoplay: true
+    };
+    this.player = new RTSPtoWEBPlayer(options);
+    this.player.load(source);
+  },
+  beforeUnmount() {
+    this.player.destroy();
+  }
 };
 </script>
 
 <style>
-#mySelect {
-  font-family: 'Josefin Sans', sans-serif;
-}
+  @import url("../assets/sidebar.css");
 
-.sidebar-container {
-  position: static;
-}
-
-.sidebar-button {
-  min-width: 13vw;
-  min-height: 6vh;
-  font-size: 1vw;
-  display: block;
-  padding: 1.5vh;
-  text-align: center;
-  background-color: #1d1b31;
-  color: #e2e2e2;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-bottom: 1vh;
-  margin-top: 1vh;
-  margin-left: 0.5vw;
-  transition: background-color 0.4s, color 0.4s, box-shadow 0.4s;
-  font-family: 'Josefin Sans', sans-serif;
-  box-shadow: 0 0 9px #07070d;
-}
-
-.sidebar-button:hover {
-  background-color: #e2e2e2;
-  color: #21262d;
-  box-shadow: 0 0 7px #e2e2e2;
-}
-
-.sidebar-button:focus {
-  outline: none;
-}
-
-.sidebar-background {
-  position: absolute;
-  min-width: 14vw;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background-color: #11101d;
-  opacity: 0.95;
-  font-family: 'Josefin Sans', sans-serif;
-  transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
-  z-index: 1;
-}
-
-.sidebar.open .sidebar-background {
-  transform: translateX(0);
-}
-
-.sidebar.closed .sidebar-background {
-  transform: translateX(-100%);
-}
-
-.sidebar-header {
-  color: #e2e2e2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  text-align: end;
-  margin-top: 4vh;
-  font-size: 1.5vw;
-  text-shadow: 0 0 5px #23222d;
-  margin-bottom: 5vh;
-}
-
-.sidebar.open .sidebar-button {
-  transition-delay: 0.1s;
-}
-
-.logo {
-  width: 80%;
-  max-width: 150px;
-}
-
-.select-container {
-  font-size: 1vw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-
-.custom-select {
-  min-width: 13vw;
-  min-height: 6vh;
-  font-size: 1vw;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 8px;
-  background-color: #1E1F29;
-  color: #e2e2e2;
-  cursor: pointer;
-  transition: background-color 0.4s, color 0.4s, box-shadow 0.4s;
-  font-family: 'Josefin Sans', sans-serif;
-  box-shadow: 0 0 9px #07070d;
-  padding-left: 1vw;
-}
-
-.custom-select:hover {
-  background-color: #e2e2e2;
-  color: #21262d;
-  box-shadow: 0 0 7px #e2e2e2;
-}
-
-.custom-select:focus {
-  outline: none;
-}
-
-hr.rounded {
-  border-top: 0.05vh solid #e2e2e2;
-  border-radius: 15px;
-  width: 4vw;
-  margin-top: 3vh;
-  margin-bottom: 3vh;
-}
+  .fullscreen-player {
+  position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    /* fix scaling */
+  }
 </style>
