@@ -1,13 +1,13 @@
 <template>
-  <sidebar></sidebar>
+  <Player></Player>
 </template>
 
 <script>
-import Sidebar from './components/SidebarMain.vue';
+import Player from './components/Player.vue';
 
 export default {
   components: {
-    Sidebar
+    Player
   },
 };
 </script>

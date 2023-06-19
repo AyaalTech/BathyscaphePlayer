@@ -22,7 +22,7 @@
           <hr class="rounded">
           <ul>
             <li v-for="(url, name) in filteredStreams" :key="name">
-              <button class="sidebar-button" :name="name" :value="url" @click="handleStreamSelected(name)">
+              <button class="sidebar-button" :name="name" :value="url" @click="handleStreamSelected(name)" :disabled="streamErrors.includes(name)">
                 <sidebar-item :name="name" :uuid="name"></sidebar-item>
               </button>
             </li>
@@ -62,6 +62,7 @@ export default {
       filteredStreamsData: {},
       uuid: '',
       elementId: 'player',
+      streamErrors: [],
       player: null,
     };
   },
