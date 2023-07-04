@@ -54,13 +54,10 @@ export default {
   },
   data() {
     return {
-      config: {},
       streams: {},
       showSidebar: true,
       devices: [],
       selectedDevice: '',
-      filteredStreamsData: {},
-      uuid: '',
       elementId: 'player',
       streamErrors: [],
       player: null,
@@ -78,7 +75,7 @@ export default {
       const server = "127.0.0.1:8083";
       const source = `http://${server}/stream/receiver/${uuid}`;
 
-      this.player.destroy(); // Destroy the existing player
+      this.player.destroy();
 
       const options = {
         controls: false,
@@ -112,7 +109,7 @@ export default {
     this.player = new RTSPtoWEBPlayer(options);
     this.player.load(source);
   },
-  beforeUnmount() {
+  beforeUnmounted() {
     this.player.destroy();
   }
 };
