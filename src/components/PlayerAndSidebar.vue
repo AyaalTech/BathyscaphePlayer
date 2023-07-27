@@ -21,8 +21,8 @@
           </div>
           <hr class="rounded">
           <ul>
-            <li v-for="(url, name) in filteredStreams" :key="name">
-              <button class="sidebar-button" :name="name" :value="url" @click="handleStreamSelected(name)" :disabled="streamErrors.includes(name)">
+            <li v-for="(stream, name) in filteredStreams" :key="name">
+              <button class="sidebar-button" :name="name" :value="stream.url" @click="handleStreamSelected(name)" :disabled="!stream.status">
                 <sidebar-item :name="name" :uuid="name"></sidebar-item>
               </button>
             </li>
@@ -35,10 +35,11 @@
 </template>
 
 <script>
+import axios from 'axios';
 import RTSPtoWEBPlayer from "rtsptowebplayer";
 import ToggleButton from './ToggleButton.vue';
 import SidebarItem from './SidebarItem.vue';
-import configData from './../../RTSPtoWebRTC/config.json';
+import configData from './../../RTSPtoWeb/config.json';
 
 export default {
   name: "PlayerVue",
@@ -46,7 +47,8 @@ export default {
     filteredStreams() {
       return Object.entries(this.streams).reduce((filtered, [name, stream]) => {
         if (stream.deviceNumber.toString() === this.selectedDevice) {
-          filtered[name] = stream.url;
+          const streamStatus = this.checkStreamStatus(stream.url);
+          filtered[name] = { url: stream.url, status: streamStatus };
         }
         return filtered;
       }, {});
@@ -54,26 +56,63 @@ export default {
   },
   data() {
     return {
+      config: {},
       streams: {},
       showSidebar: true,
       devices: [],
       selectedDevice: '',
       elementId: 'player',
-      streamErrors: [],
-      player: null,
     };
   },
   methods: {
+    async fetchStreams() {
+      const serverUrl = 'http://127.0.0.1:8083/streams';
+      try {
+        const response = await axios.get(serverUrl, {
+          auth: {
+            username: 'demo',
+            password: 'demo'
+          }
+        });
+        const streamsData = response.data.payload;
+        const brokenStreams = [];
+
+        Object.entries(streamsData).forEach(([uuid, streamInfo]) => {
+          Object.entries(streamInfo.channels).forEach(([channel, channelInfo]) => {
+            if (!channelInfo.status || channelInfo.status !== 1) {
+              brokenStreams.push({
+                uuid,
+                channel,
+                url: channelInfo.url
+              });
+            }
+          });
+        });
+
+        console.log('Broken Streams:', brokenStreams);
+        // You can now use the brokenStreams list to update the disabled state of buttons in your template.
+        // You might want to add the brokenStreams to your component's data and use it in the template to disable buttons.
+        // For example, you can create a data property called `brokenStreams` and set it using `this.brokenStreams = brokenStreams;`
+      } catch (error) {
+        console.error('Error fetching streams:', error);
+      }
+    },
+    async checkStreamStatus(url) {
+      try {
+        const response = await fetch(url);
+        return response.ok;
+      } catch (error) {
+        return false;
+      }
+    },
     toggleSidebar() {
       this.showSidebar = !this.showSidebar;
-    },
-    updateFilteredStreams() {
-      this.filteredStreamsData = this.filteredStreams;
     },
     handleStreamSelected(uuid) {
       this.uuid = uuid;
       const server = "127.0.0.1:8083";
-      const source = `http://${server}/stream/receiver/${uuid}`;
+      const channel = "0";
+      const source = `http://${server}/stream/${uuid}/channel/${channel}/webrtc?uuid=${uuid}/&channel=${channel}`;
 
       this.player.destroy();
 
@@ -88,9 +127,22 @@ export default {
   },
   created() {
     this.config = configData;
-    this.streams = configData.streams;
+
+    this.streams = Object.entries(this.config.streams).reduce((acc, [uuid, streamData]) => {
+      if (streamData.channels && typeof streamData.channels === 'object') {
+        Object.values(streamData.channels).forEach(channel => {
+          acc[uuid] = {
+            deviceNumber: channel.deviceNumber,
+            url: channel.url
+          };
+        });
+      }
+      return acc;
+    }, {});
+
     this.devices = [...new Set(Object.values(this.streams).map((stream) => stream.deviceNumber))];
     this.selectedDevice = this.devices[0].toString();
+    this.fetchStreams();
   },
   components: {
     SidebarItem,
@@ -98,8 +150,9 @@ export default {
   },
   mounted() {
     const server = "127.0.0.1:8083";
-    const uuid = "Japan";
-    const source = `http://${server}/stream/receiver/${uuid}`;
+    const uuid = "demo";
+    const channel = "0";
+    const source = `http://${server}/stream/${uuid}/channel/${channel}/webrtc?uuid=${uuid}/&channel=${channel}`;
 
     const options = {
       controls: false,
@@ -109,7 +162,7 @@ export default {
     this.player = new RTSPtoWEBPlayer(options);
     this.player.load(source);
   },
-  beforeUnmounted() {
+  beforeUnmount() {
     this.player.destroy();
   }
 };
@@ -119,12 +172,11 @@ export default {
   @import url("../assets/sidebar.css");
 
   .fullscreen-player {
-  position: fixed;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    /* fix scaling */
   }
 </style>

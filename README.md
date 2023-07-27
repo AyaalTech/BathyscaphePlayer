@@ -1,18 +1,16 @@
-# Vue Bathyscaphe Player App
+# Vue Player Component
 
-**To setup and run project follow these steps**
-
-### 1. Project setup
+## Project setup
 ```
-npm install (also does git submodule init && git submodule update)
+npm install
 ```
 
-### 2. Config setup
-```
-npm run setup
-```
-
-### 3. Project run
+### Compiles and hot-reloads for development
 ```
 npm run serve
+```
+
+### Compiles and minifies for production
+```
+npm run build
 ```

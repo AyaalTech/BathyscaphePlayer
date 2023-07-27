@@ -118,6 +118,5 @@
     border-top: 0.05vh solid #e2e2e2;
     border-radius: 15px;
     width: 4vw;
-    margin-top: 3vh;
-    margin-bottom: 3vh;
+    margin: 3vh auto;
   }

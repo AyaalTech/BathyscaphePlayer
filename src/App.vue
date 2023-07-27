@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import Player from './components/Player.vue';
+import Player from './components/PlayerAndSidebar.vue';
 
 export default {
   components: {
