@@ -4,6 +4,10 @@
   <div class="fullscreen-player">
     <div :id="elementId" />
   </div>
+  <div class="loader-container" v-if="isLoading">
+    <div class="loader"></div>
+    <p class="loading-text"><i class='bx bx-hourglass hourglass-tilt'></i></p>
+  </div>
   <div class="sidebar-container">
     <div class="sidebar-wrapper">
       <aside :class="['sidebar', { 'open': showSidebar, 'closed': !showSidebar }]">
@@ -56,6 +60,7 @@ export default {
   },
   data() {
     return {
+      isLoading: false,
       config: {},
       streams: {},
       showSidebar: true,
@@ -90,9 +95,6 @@ export default {
         });
 
         console.log('Broken Streams:', brokenStreams);
-        // You can now use the brokenStreams list to update the disabled state of buttons in your template.
-        // You might want to add the brokenStreams to your component's data and use it in the template to disable buttons.
-        // For example, you can create a data property called `brokenStreams` and set it using `this.brokenStreams = brokenStreams;`
       } catch (error) {
         console.error('Error fetching streams:', error);
       }
@@ -109,6 +111,7 @@ export default {
       this.showSidebar = !this.showSidebar;
     },
     handleStreamSelected(uuid) {
+      this.isLoading = true;
       this.uuid = uuid;
       const server = "127.0.0.1:8083";
       const channel = "0";
@@ -123,6 +126,9 @@ export default {
       };
       this.player = new RTSPtoWEBPlayer(options);
       this.player.load(source);
+      setTimeout(() => {
+        this.isLoading = false;
+      }, 1500); 
     },
   },
   created() {
@@ -178,5 +184,51 @@ export default {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
+  }
+
+  .loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+
+  .loader {
+    border: 0.4vw solid #23222d; 
+    border-top: 0.4vw solid #e3e3e3; 
+    border-bottom: 0.4vw solid #e3e3e3; 
+    border-radius: 50%;
+    width: 7vw;
+    height: 7vw;
+    animation: spin 4s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .loading-text {
+    position: absolute;
+    font-size: 2.5vw;
+    color: #fff;  
+    text-align: center; 
+  }
+
+  .hourglass-tilt {
+    animation: tilt 2.5s ease-in-out infinite;
+  }
+
+  @keyframes tilt {
+    0%, 100% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(180deg);
+    }
   }
 </style>

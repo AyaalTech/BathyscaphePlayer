@@ -29,7 +29,7 @@
   .toggle-button {
     background-color: #1E1F29;
     margin-left: 1vw;
-    z-index: 100;
+    z-index: 50;
     position: absolute;
     bottom: 1vh;
     margin-left: 0.5vw;
