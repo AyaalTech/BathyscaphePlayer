@@ -26,7 +26,7 @@
           <hr class="rounded">
           <ul>
             <li v-for="(stream, name) in filteredStreams" :key="name">
-              <button class="sidebar-button" :name="name" :value="stream.url" @click="handleStreamSelected(name)" :disabled="!stream.status">
+              <button class="sidebar-button" :name="name" :value="stream.url" @click="handleStreamSelected(name)" :disabled="stream.isBroken" :class="{ 'disabled-button': stream.isBroken }">
                 <sidebar-item :name="name" :uuid="name"></sidebar-item>
               </button>
             </li>
@@ -52,7 +52,8 @@ export default {
       return Object.entries(this.streams).reduce((filtered, [name, stream]) => {
         if (stream.deviceNumber.toString() === this.selectedDevice) {
           const streamStatus = this.checkStreamStatus(stream.url);
-          filtered[name] = { url: stream.url, status: streamStatus };
+          const isBroken = this.brokenStreams.some(brokenStream => brokenStream.uuid === name);
+          filtered[name] = { url: stream.url, status: streamStatus, isBroken };
         }
         return filtered;
       }, {});
@@ -60,6 +61,7 @@ export default {
   },
   data() {
     return {
+      brokenStreams: [],
       isLoading: false,
       config: {},
       streams: {},
@@ -93,6 +95,8 @@ export default {
             }
           });
         });
+
+        this.brokenStreams = brokenStreams;
 
         console.log('Broken Streams:', brokenStreams);
       } catch (error) {
@@ -230,5 +234,10 @@ export default {
     50% {
       transform: rotate(180deg);
     }
+  }
+
+  .disabled-button {
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 </style>

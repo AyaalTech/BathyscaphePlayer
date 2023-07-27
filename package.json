@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "install": "git submodule init && git submodule update",
+    "serve-front": "vue-cli-service serve",
+    "serve-backend": "sh -c 'cd RTSPtoWeb && GO111MODULE=on go run *.go'",
     "serve": "sh -c 'vue-cli-service serve & cd RTSPtoWeb && GO111MODULE=on go run *.go'",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
