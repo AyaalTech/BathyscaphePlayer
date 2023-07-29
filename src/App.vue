@@ -3,7 +3,7 @@
   <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
   <div>
     <div class="loading-screen" v-if="isLoading">
-      <p style="font-weight: bolder; color: #e2e2e2;"><i class="bx bx-current-location"></i> Bathyscaphe</p>
+      <p style="font-weight: bolder; color: #e2e2e2; animation: pulsate 2s ease-in-out infinite;"><i class="bx bx-current-location"></i> Bathyscaphe</p>
     </div>
 
     <div class="app-container" v-else>
@@ -56,7 +56,6 @@ export default {
     background-color: #11101d;
     color: #ffffff;
     font-size: 2rem;
-    animation: pulsate 2s ease-in-out infinite;
   }
 
   @keyframes pulsate {

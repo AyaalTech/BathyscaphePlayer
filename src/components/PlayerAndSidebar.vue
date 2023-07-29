@@ -61,7 +61,6 @@ export default {
   },
   data() {
     return {
-      brokenStreams: [],
       isLoading: false,
       config: {},
       streams: {},
@@ -69,40 +68,64 @@ export default {
       devices: [],
       selectedDevice: '',
       elementId: 'player',
+      brokenStreams: [],
+      workingStreams: [],
     };
   },
   methods: {
-    async fetchStreams() {
-      const serverUrl = 'http://127.0.0.1:8083/streams';
-      try {
-        const response = await axios.get(serverUrl, {
-          auth: {
-            username: 'demo',
-            password: 'demo'
-          }
-        });
-        const streamsData = response.data.payload;
-        const brokenStreams = [];
+    async initPlayer() {
+      await this.fetchStreams();
 
-        Object.entries(streamsData).forEach(([uuid, streamInfo]) => {
-          Object.entries(streamInfo.channels).forEach(([channel, channelInfo]) => {
-            if (!channelInfo.status || channelInfo.status !== 1) {
-              brokenStreams.push({
-                uuid,
-                channel,
-                url: channelInfo.url
-              });
-            }
-          });
-        });
+      if (this.workingStreams.length > 0) {
+        const server = "127.0.0.1:8083";
+        const uuid = this.workingStreams[0].uuid;
+        const channel = "0";
+        const source = `http://${server}/stream/${uuid}/channel/${channel}/webrtc?uuid=${uuid}/&channel=${channel}`;
 
-        this.brokenStreams = brokenStreams;
-
-        console.log('Broken Streams:', brokenStreams);
-      } catch (error) {
-        console.error('Error fetching streams:', error);
+        const options = {
+          controls: false,
+          parentElement: document.getElementById(this.elementId),
+          autoplay: true
+        };
+        this.player = new RTSPtoWEBPlayer(options);
+        this.player.load(source);
       }
     },
+    async fetchStreams() {
+    const serverUrl = 'http://127.0.0.1:8083/streams';
+    try {
+      const response = await axios.get(serverUrl, {
+        auth: {
+          username: 'demo',
+          password: 'demo'
+        }
+      });
+      const streamsData = response.data.payload;
+      
+      this.brokenStreams = [];
+      this.workingStreams = [];
+
+      Object.entries(streamsData).forEach(([uuid, streamInfo]) => {
+        Object.entries(streamInfo.channels).forEach(([channel, channelInfo]) => {
+          const streamObject = {
+            uuid,
+            channel,
+            url: channelInfo.url,
+          };
+
+          if (!channelInfo.status || channelInfo.status !== 1) {
+            this.brokenStreams.push(streamObject);
+          } else {
+            this.workingStreams.push(streamObject)
+          }
+        });
+      });
+      console.log('Broken Streams:', this.brokenStreams);
+      console.log('Working Streams:', this.workingStreams);
+    } catch (error) {
+      console.error('Error fetching streams:', error);
+    }
+  },
     async checkStreamStatus(url) {
       try {
         const response = await fetch(url);
@@ -136,6 +159,7 @@ export default {
     },
   },
   created() {
+    this.initPlayer();
     this.config = configData;
 
     this.streams = Object.entries(this.config.streams).reduce((acc, [uuid, streamData]) => {
@@ -157,25 +181,8 @@ export default {
   components: {
     SidebarItem,
     ToggleButton
-  },
-  mounted() {
-    const server = "127.0.0.1:8083";
-    const uuid = "demo";
-    const channel = "0";
-    const source = `http://${server}/stream/${uuid}/channel/${channel}/webrtc?uuid=${uuid}/&channel=${channel}`;
-
-    const options = {
-      controls: false,
-      parentElement: document.getElementById(this.elementId),
-      autoplay: true
-    };
-    this.player = new RTSPtoWEBPlayer(options);
-    this.player.load(source);
-  },
-  beforeUnmount() {
-    this.player.destroy();
   }
-};
+}
 </script>
 
 <style>
@@ -237,7 +244,6 @@ export default {
   }
 
   .disabled-button {
-    cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.5;
   }
 </style>
