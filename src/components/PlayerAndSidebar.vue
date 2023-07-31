@@ -1,13 +1,16 @@
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+
   <div class="fullscreen-player">
     <div :id="elementId" />
   </div>
+
   <div class="loader-container" v-if="isLoading">
     <div class="loader"></div>
-    <p class="loading-text"><i class='bx bx-hourglass hourglass-tilt'></i></p>
+    <p class="loading-text"><i class="bx bx-hourglass hourglass-tilt"></i></p>
   </div>
+
   <div class="sidebar-container">
     <div class="sidebar-wrapper">
       <aside :class="['sidebar', { 'open': showSidebar, 'closed': !showSidebar }]">
@@ -17,22 +20,33 @@
           </div>
           <hr class="rounded">
           <div class="select-container">
-              <div><p style="font-size: 1.2vw; color: #e2e2e2; margin-bottom: 1vh;">Currently streaming:</p> {{ selected }}</div>
-                <select class="custom-select" v-model="selectedDevice" @change="updateFilteredStreams">
-                  <option id="mySelect" disabled value="">Select the drone</option>
-                  <option v-for="device in devices" :key="device">{{ device }}</option>
-                </select>
+            <div>
+              <p style="font-size: 1.2vw; color: #e2e2e2; margin-bottom: 1vh;">Currently streaming:</p>
+              {{ selected }}
+            </div>
+            <select class="custom-select" v-model="selectedDevice" @change="updateFilteredStreams">
+              <option id="mySelect" disabled value="">Select the drone</option>
+              <option v-for="device in devices" :key="device">{{ device }}</option>
+            </select>
           </div>
           <hr class="rounded">
           <ul>
             <li v-for="(stream, name) in filteredStreams" :key="name">
-              <button class="sidebar-button" :name="name" :value="stream.url" @click="handleStreamSelected(name)" :disabled="stream.isBroken" :class="{ 'disabled-button': stream.isBroken }">
+              <button
+                class="sidebar-button"
+                :name="name"
+                :value="stream.url"
+                @click="handleStreamSelected(name)"
+                :disabled="stream.isBroken"
+                :class="{ 'disabled-button': stream.isBroken }"
+              >
                 <sidebar-item :name="name" :uuid="name"></sidebar-item>
               </button>
             </li>
           </ul>
         </div>
       </aside>
+
       <toggle-button :show-sidebar="showSidebar" @toggle-sidebar="toggleSidebar"></toggle-button>
     </div>
   </div>
@@ -47,6 +61,7 @@ import configData from './../../RTSPtoWeb/config.json';
 
 export default {
   name: "PlayerVue",
+
   computed: {
     filteredStreams() {
       return Object.entries(this.streams).reduce((filtered, [name, stream]) => {
@@ -59,6 +74,7 @@ export default {
       }, {});
     },
   },
+
   data() {
     return {
       isLoading: false,
@@ -72,6 +88,7 @@ export default {
       workingStreams: [],
     };
   },
+
   methods: {
     async initPlayer() {
       await this.fetchStreams();
@@ -91,41 +108,43 @@ export default {
         this.player.load(source);
       }
     },
+
     async fetchStreams() {
-    const serverUrl = 'http://127.0.0.1:8083/streams';
-    try {
-      const response = await axios.get(serverUrl, {
-        auth: {
-          username: 'demo',
-          password: 'demo'
-        }
-      });
-      const streamsData = response.data.payload;
-      
-      this.brokenStreams = [];
-      this.workingStreams = [];
-
-      Object.entries(streamsData).forEach(([uuid, streamInfo]) => {
-        Object.entries(streamInfo.channels).forEach(([channel, channelInfo]) => {
-          const streamObject = {
-            uuid,
-            channel,
-            url: channelInfo.url,
-          };
-
-          if (!channelInfo.status || channelInfo.status !== 1) {
-            this.brokenStreams.push(streamObject);
-          } else {
-            this.workingStreams.push(streamObject)
+      const serverUrl = 'http://127.0.0.1:8083/streams';
+      try {
+        const response = await axios.get(serverUrl, {
+          auth: {
+            username: 'demo',
+            password: 'demo'
           }
         });
-      });
-      console.log('Broken Streams:', this.brokenStreams);
-      console.log('Working Streams:', this.workingStreams);
-    } catch (error) {
-      console.error('Error fetching streams:', error);
-    }
-  },
+        const streamsData = response.data.payload;
+
+        this.brokenStreams = [];
+        this.workingStreams = [];
+
+        Object.entries(streamsData).forEach(([uuid, streamInfo]) => {
+          Object.entries(streamInfo.channels).forEach(([channel, channelInfo]) => {
+            const streamObject = {
+              uuid,
+              channel,
+              url: channelInfo.url,
+            };
+
+            if (!channelInfo.status || channelInfo.status !== 1) {
+              this.brokenStreams.push(streamObject);
+            } else {
+              this.workingStreams.push(streamObject)
+            }
+          });
+        });
+        console.log('Broken Streams:', this.brokenStreams);
+        console.log('Working Streams:', this.workingStreams);
+      } catch (error) {
+        console.error('Error fetching streams:', error);
+      }
+    },
+
     async checkStreamStatus(url) {
       try {
         const response = await fetch(url);
@@ -134,9 +153,11 @@ export default {
         return false;
       }
     },
+
     toggleSidebar() {
       this.showSidebar = !this.showSidebar;
     },
+
     handleStreamSelected(uuid) {
       this.isLoading = true;
       this.uuid = uuid;
@@ -158,6 +179,7 @@ export default {
       }, 1500); 
     },
   },
+
   created() {
     this.initPlayer();
     this.config = configData;
@@ -178,6 +200,7 @@ export default {
     this.selectedDevice = this.devices[0].toString();
     this.fetchStreams();
   },
+
   components: {
     SidebarItem,
     ToggleButton
@@ -209,9 +232,9 @@ export default {
   }
 
   .loader {
-    border: 0.4vw solid #23222d; 
-    border-top: 0.4vw solid #e3e3e3; 
-    border-bottom: 0.4vw solid #e3e3e3; 
+    border: 0.4vw solid #23222d;
+    border-top: 0.4vw solid #e3e3e3;
+    border-bottom: 0.4vw solid #e3e3e3;
     border-radius: 50%;
     width: 7vw;
     height: 7vw;
@@ -219,15 +242,19 @@ export default {
   }
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   .loading-text {
     position: absolute;
     font-size: 2.5vw;
-    color: #fff;  
-    text-align: center; 
+    color: #fff;
+    text-align: center;
   }
 
   .hourglass-tilt {
