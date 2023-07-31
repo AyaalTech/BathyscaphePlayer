@@ -2,7 +2,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
   <div>
-    <div class="loading-screen" v-if="isLoading">
+    <div class="loading-screen" v-show="isLoading">
       <section>
         <div class="content">
           <h2><i class="bx bx-current-location"></i>Bathyscaphe</h2>
@@ -11,7 +11,7 @@
       </section>
     </div>
 
-    <div class="app-container" v-else>
+    <div class="app-container" v-show="!isLoading">
       <Player></Player>
     </div>
   </div>
@@ -30,9 +30,10 @@ export default {
     };
   },
   mounted() {
+    // Статичное кол во времени симулирующее асинхронный процесс (можно переделать)
     setTimeout(() => {
       this.isLoading = false;
-    }, 4000);
+    }, 5000);
   }
 };
 </script>
@@ -72,14 +73,14 @@ export default {
   .content h2 {
     display: flex;
     color: #e2e2e2;
-    font-size: 5vw;
+    font-size: 3.5vw;
     position: absolute;
     transform: translate(-50%, -50%);
   }
 
   .content h2:nth-child(1) {
     color: solid;
-    -webkit-text-stroke: 4px #e2e2e2;
+    -webkit-text-stroke: 0.15vw #e2e2e2;
   }
 
   .content h2:nth-child(2) {
