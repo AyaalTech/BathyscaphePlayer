@@ -198,7 +198,12 @@ export default {
 
     this.devices = [...new Set(Object.values(this.streams).map((stream) => stream.deviceNumber))];
     this.selectedDevice = this.devices[0].toString();
+
     this.fetchStreams();
+
+    setInterval(() => {
+      this.fetchStreams();
+    }, 10000);
   },
 
   components: {
