@@ -3,7 +3,12 @@
   <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
   <div>
     <div class="loading-screen" v-if="isLoading">
-      <p style="font-weight: bolder; color: #e2e2e2; animation: pulsate 2s ease-in-out infinite;"><i class="bx bx-current-location"></i> Bathyscaphe</p>
+      <section>
+        <div class="content">
+          <h2><i class="bx bx-current-location"></i>Bathyscaphe</h2>
+          <h2><i class="bx bx-current-location"></i>Bathyscaphe</h2>
+        </div>
+      </section>
     </div>
 
     <div class="app-container" v-else>
@@ -43,30 +48,73 @@ export default {
     background-color: #000000;
   }
 
-  .loading-screen {
+  @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     font-family: 'Josefin Sans', sans-serif;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background-color: #11101d;
-    color: #ffffff;
-    font-size: 2rem;
   }
 
-  @keyframes pulsate {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.4);
-    }
+  body {
+    display: flex;
+    background: #1d1b31;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .content {
+    position: relative;
+  }
+
+  .content h2 {
+    display: flex;
+    color: #e2e2e2;
+    font-size: 5vw;
+    position: absolute;
+    transform: translate(-50%, -50%);
+  }
+
+  .content h2:nth-child(1) {
+    color: solid;
+    -webkit-text-stroke: 4px #e2e2e2;
+  }
+
+  .content h2:nth-child(2) {
+    color: #1d1b31;
+    animation: animate 3s ease-in-out infinite;
+  }
+
+  @keyframes animate {
+    0%,
     100% {
-      transform: scale(1);
+      clip-path: polygon(
+        0% 45%,
+        16% 44%,
+        33% 50%,
+        54% 60%,
+        70% 61%,
+        84% 59%,
+        100% 52%,
+        100% 100%,
+        0% 100%
+      );
+    }
+
+    50% {
+      clip-path: polygon(
+        0% 60%,
+        15% 65%,
+        34% 66%,
+        51% 62%,
+        67% 50%,
+        84% 45%,
+        100% 46%,
+        100% 100%,
+        0% 100%
+      );
     }
   }
 </style>
