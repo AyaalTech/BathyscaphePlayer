@@ -30,20 +30,23 @@
             </select>
           </div>
           <hr class="rounded">
-          <ul>
-            <li v-for="(stream, name) in filteredStreams" :key="name">
-              <button
-                class="sidebar-button"
-                :name="name"
-                :value="stream.url"
-                @click="handleStreamSelected(name)"
-                :disabled="stream.isBroken"
-                :class="{ 'disabled-button': stream.isBroken }"
-              >
-                <sidebar-item :name="name" :uuid="name"></sidebar-item>
-              </button>
-            </li>
-          </ul>
+          <div class="button-list-container">
+            <ul>
+              <li v-for="(stream, name) in filteredStreams" :key="name">
+                <button
+                  class="sidebar-button"
+                  :name="name"
+                  :value="stream.url"
+                  @click="handleStreamSelected(name)"
+                  :disabled="stream.isBroken"
+                  :class="{ 'disabled-button': stream.isBroken }"
+                >
+                  <sidebar-item :name="name" :uuid="name"></sidebar-item>
+                </button>
+              </li>
+            </ul>
+          </div>
+          <hr class="rounded">
         </div>
       </aside>
 
@@ -231,8 +234,8 @@ export default {
     align-items: center;
     z-index: 100;
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background-color: rgba(0, 0, 0, 0.6);
   }
 
@@ -277,5 +280,11 @@ export default {
 
   .disabled-button {
     opacity: 0.5;
+  }
+
+  .button-list-container {
+    height: 56vh;
+    overflow-y: auto;
+    background: linear-gradient(to bottom, #11101d, #11101d);
   }
 </style>
