@@ -1,5 +1,5 @@
 #mySelect {
-  font-family: 'Josefin Sans', sans-serif;
+  font-family: "Josefin Sans", sans-serif;
 }
 
 .sidebar-container {
@@ -22,7 +22,7 @@
   margin-top: 1vh;
   margin-left: 0.5vw;
   transition: background-color 0.4s, color 0.4s, box-shadow 0.4s;
-  font-family: 'Josefin Sans', sans-serif;
+  font-family: "Josefin Sans", sans-serif;
   box-shadow: 0 0 9px #07070d;
 }
 
@@ -44,7 +44,7 @@
   left: 0;
   background-color: #11101d;
   opacity: 0.95;
-  font-family: 'Josefin Sans', sans-serif;
+  font-family: "Josefin Sans", sans-serif;
   transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
   z-index: 1;
 }
@@ -94,11 +94,11 @@
   padding: 0.5rem;
   border: none;
   border-radius: 8px;
-  background-color: #1E1F29;
+  background-color: #1e1f29;
   color: #e2e2e2;
   cursor: pointer;
   transition: background-color 0.4s, color 0.4s, box-shadow 0.4s;
-  font-family: 'Josefin Sans', sans-serif;
+  font-family: "Josefin Sans", sans-serif;
   box-shadow: 0 0 9px #07070d;
   padding-left: 1vw;
 }
@@ -111,7 +111,7 @@
 }
 
 .custom-select:focus {
-  outline:#07070d;
+  outline: #07070d;
 }
 
 hr.rounded {
